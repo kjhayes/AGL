@@ -1,0 +1,16 @@
+//Copyright (C) - Kevin Hayes - 2022 - <KevinHayes2026@u.northwestern.edu> - All Rights Reserved
+
+DEFINES:
+    //WARNING: Allowing access, and as such use of, functions which agl undefines 
+               can break the functionality of agl functions and structures! 
+               (Even "safe" macros should be left undefined to discourage certain behaviours)
+               DEFINING THESE MACROS CAN CAUSE UNDEFINED BEHAVIOUR!
+
+    AGL_GL_OBJECT_ACCESS: (EXTREMELY UNSAFE)
+        Provides access to opengl object functions such as glCreate* glGen* glDelete* and glBind*
+
+    AGL_SHADER_ACCESS: (Possibly safe though not recommended)
+        Provides access to shader functions such as glShaderSource, glCompileShader, and glGetShaderInfoLog
+
+    AGL_PROGRAM_ACCESS: (Possibly safe though not recommended)
+        Provides access to program functions such as glLinkProgram, glAttachShader, and glProgramInfoLog
