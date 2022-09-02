@@ -1,0 +1,2 @@
+GLAD - MIT
+GLM - MIT (Happy Bunny)

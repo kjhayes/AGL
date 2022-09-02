@@ -1,4 +1,4 @@
-//Copyright (C) - Kevin Hayes - 2022 - <KevinHayes2026@u.northwestern.edu> - All Rights Reserved
+//Copyright (C) - Kevin Hayes - 2022 - All Rights Reserved
 
 DEFINES:
     //WARNING: Allowing access, and as such use of, functions which agl undefines 
@@ -6,7 +6,7 @@ DEFINES:
                (Even "safe" macros should be left undefined to discourage certain behaviours)
                DEFINING THESE MACROS CAN CAUSE UNDEFINED BEHAVIOUR!
 
-    AGL_GL_OBJECT_ACCESS: (EXTREMELY UNSAFE)
+    AGL_GL_OBJECT_ACCESS: (EXTREMELY UNSAFE, Breaks the invariants AGL objects assume)
         Provides access to opengl object functions such as glCreate* glGen* glDelete* and glBind*
 
     AGL_SHADER_ACCESS: (Possibly safe though not recommended)

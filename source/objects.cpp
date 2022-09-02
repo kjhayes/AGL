@@ -1,8 +1,10 @@
-//Copyright (C) - Kevin Hayes - 2022 - <KevinHayes2026@u.northwestern.edu> - All Rights Reserved
+//Copyright (C) - Kevin Hayes - 2022 - All Rights Reserved
 
 #define AGL_GL_OBJECT_ACCESS
 #define AGL_SHADER_ACCESS
 #define AGL_PROGRAM_ACCESS
+
+#include<iostream>
 
 #include "agl/objects.hpp"
 
@@ -41,6 +43,8 @@ GLuint buffer::id() {
 STATIC_DEF(buffer::_bindings);
 
 #pragma endregion
+
+//single_binding_buffer is defined in header due to template definitions
 
 #pragma region any_shader 
 
@@ -122,8 +126,152 @@ std::string program::info_log() const {
     glGetProgramInfoLog(this->_id, BUF_SIZE, &length, buffer);
     return std::string(buffer, length);
 }
+GLint program::uniform_location(const char* name) {
+    GLint location = glGetUniformLocation(this->_id, name);
+    #ifndef NDEBUG
+    if(location < 0) {
+        std::cerr << "Error Uniform: \""<<name<<"\" Not Found!" << std::endl;
+    }
+    #endif
+    return location;
+}
 
 STATIC_DEF(program::_bound_id)(0);
+
+#pragma region uniforms
+
+//Vectors
+void program::bound::set_uniform(GLint loc, float const val) {
+    glUniform1f(loc, val);
+}
+void program::bound::set_uniform(GLint loc, glm::fvec2 const& val) {
+    glUniform2f(loc, val.x, val.y);
+}
+void program::bound::set_uniform(GLint loc, glm::fvec3 const& val) {
+    glUniform3f(loc, val.x, val.y, val.z);
+}
+void program::bound::set_uniform(GLint loc, glm::fvec4 const& val) {
+    glUniform4f(loc, val.x, val.y, val.z, val.z);
+}
+void program::bound::set_uniform(GLint loc, int const val) {
+    glUniform1i(loc, val);
+}
+void program::bound::set_uniform(GLint loc, glm::ivec2 const& val) {
+    glUniform2i(loc, val.x, val.y);
+}
+void program::bound::set_uniform(GLint loc, glm::ivec3 const& val) {
+    glUniform3i(loc, val.x, val.y, val.z);
+}
+void program::bound::set_uniform(GLint loc, glm::ivec4 const& val) {
+    glUniform4i(loc, val.x, val.y, val.z, val.w);
+}
+void program::bound::set_uniform(GLint loc, unsigned int const val) {
+    glUniform1ui(loc, val);
+}
+void program::bound::set_uniform(GLint loc, glm::uvec2 const& val) {
+    glUniform2ui(loc, val.x, val.y);
+}
+void program::bound::set_uniform(GLint loc, glm::uvec3 const& val) {
+    glUniform3ui(loc, val.x, val.y, val.z);
+}
+void program::bound::set_uniform(GLint loc, glm::uvec4 const& val) {
+    glUniform4ui(loc, val.x, val.y, val.z, val.w);
+}
+//Vector Arrays
+void program::bound::set_uniform(GLint loc, GLsizei count, float const* array) {
+    glUniform1fv(loc, count, array);
+}
+void program::bound::set_uniform(GLint loc, GLsizei count, glm::fvec2 const* array) {
+    glUniform2fv(loc, count, (float*)array);
+}
+void program::bound::set_uniform(GLint loc, GLsizei count, glm::fvec3 const* array) {
+    glUniform3fv(loc, count, (float*)array);
+}
+void program::bound::set_uniform(GLint loc, GLsizei count, glm::fvec4 const* array) {
+    glUniform4fv(loc, count, (float*)array);
+}
+void program::bound::set_uniform(GLint loc, GLsizei count, int const* array) {
+    glUniform1iv(loc, count, array);
+}
+void program::bound::set_uniform(GLint loc, GLsizei count, glm::ivec2 const* array) {
+    glUniform2iv(loc, count, (int*)array);
+}
+void program::bound::set_uniform(GLint loc, GLsizei count, glm::ivec3 const* array) {
+    glUniform3iv(loc, count, (int*)array);
+}
+void program::bound::set_uniform(GLint loc, GLsizei count, glm::ivec4 const* array) {
+    glUniform4iv(loc, count, (int*)array);
+}
+void program::bound::set_uniform(GLint loc, GLsizei count, unsigned int const* array) {
+    glUniform1uiv(loc, count, array);
+}
+void program::bound::set_uniform(GLint loc, GLsizei count, glm::uvec2 const* array) {
+    glUniform2uiv(loc, count, (unsigned int*)array);
+}
+void program::bound::set_uniform(GLint loc, GLsizei count, glm::uvec3 const* array) {
+    glUniform3uiv(loc, count, (unsigned int*)array);
+}
+void program::bound::set_uniform(GLint loc, GLsizei count, glm::uvec4 const* array) {
+    glUniform4uiv(loc, count, (unsigned int*)array);
+}
+//Matrices
+void program::bound::set_uniform(GLint loc, glm::mat2x2 const& val, bool transpose) {
+    glUniformMatrix2fv(loc, 1, transpose, (float*)&val);
+}
+void program::bound::set_uniform(GLint loc, glm::mat3x3 const& val, bool transpose) {
+    glUniformMatrix3fv(loc, 1, transpose, (float*)&val);
+}
+void program::bound::set_uniform(GLint loc, glm::mat4x4 const& val, bool transpose) {
+    glUniformMatrix4fv(loc, 1, transpose, (float*)&val);
+}
+void program::bound::set_uniform(GLint loc, glm::mat2x3 const& val, bool transpose) {
+    glUniformMatrix2x3fv(loc, 1, transpose, (float*)&val);
+}
+void program::bound::set_uniform(GLint loc, glm::mat3x2 const& val, bool transpose) {
+    glUniformMatrix3x2fv(loc, 1, transpose, (float*)&val);
+}
+void program::bound::set_uniform(GLint loc, glm::mat2x4 const& val, bool transpose) {
+    glUniformMatrix2x4fv(loc, 1, transpose, (float*)&val);
+}
+void program::bound::set_uniform(GLint loc, glm::mat4x2 const& val, bool transpose) {
+    glUniformMatrix4x2fv(loc, 1, transpose, (float*)&val);
+}
+void program::bound::set_uniform(GLint loc, glm::mat3x4 const& val, bool transpose) {
+    glUniformMatrix3x4fv(loc, 1, transpose, (float*)&val);
+}
+void program::bound::set_uniform(GLint loc, glm::mat4x3 const& val, bool transpose) {
+    glUniformMatrix4x3fv(loc, 1, transpose, (float*)&val);
+}
+//Matrix Arrays
+void program::bound::set_uniform(GLint loc, GLsizei count, glm::mat2x2 const* array, bool transpose) {
+    glUniformMatrix2fv(loc, count, transpose, (float*)array);
+} 
+void program::bound::set_uniform(GLint loc, GLsizei count, glm::mat3x3 const* array, bool transpose) {
+    glUniformMatrix3fv(loc, count, transpose, (float*)array);
+} 
+void program::bound::set_uniform(GLint loc, GLsizei count, glm::mat4x4 const* array, bool transpose) {
+    glUniformMatrix4fv(loc, count, transpose, (float*)array);
+} 
+void program::bound::set_uniform(GLint loc, GLsizei count, glm::mat2x3 const* array, bool transpose) {
+    glUniformMatrix2x3fv(loc, count, transpose, (float*)array);
+} 
+void program::bound::set_uniform(GLint loc, GLsizei count, glm::mat3x2 const* array, bool transpose) {
+    glUniformMatrix3x2fv(loc, count, transpose, (float*)array);
+} 
+void program::bound::set_uniform(GLint loc, GLsizei count, glm::mat2x4 const* array, bool transpose) {
+    glUniformMatrix2x4fv(loc, count, transpose, (float*)array);
+} 
+void program::bound::set_uniform(GLint loc, GLsizei count, glm::mat4x2 const* array, bool transpose) {
+    glUniformMatrix4x2fv(loc, count, transpose, (float*)array);
+} 
+void program::bound::set_uniform(GLint loc, GLsizei count, glm::mat3x4 const* array, bool transpose) {
+    glUniformMatrix3x4fv(loc, count, transpose, (float*)array);
+} 
+void program::bound::set_uniform(GLint loc, GLsizei count, glm::mat4x3 const* array, bool transpose) {
+    glUniformMatrix4x3fv(loc, count, transpose, (float*)array);
+} 
+
+#pragma endregion
 
 #pragma endregion
 

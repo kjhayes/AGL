@@ -1,4 +1,4 @@
-//Copyright (C) - Kevin Hayes - 2022 - <KevinHayes2026@u.northwestern.edu> - All Rights Reserved
+//Copyright (C) - Kevin Hayes - 2022 - All Rights Reserved
 
 #ifndef AGL_OBJECTS_HPP
 #define AGL_OBJECTS_HPP
@@ -26,6 +26,39 @@ private:
     GLuint _id;
     static thread_local std::unordered_map<GLenum, GLuint> _bindings;
 };
+template<GLenum TARGET>
+struct single_binding_buffer : public buffer {
+
+static_assert(
+    TARGET == GL_ARRAY_BUFFER ||
+    TARGET == GL_ATOMIC_COUNTER_BUFFER ||
+    TARGET == GL_COPY_READ_BUFFER ||
+    TARGET == GL_COPY_WRITE_BUFFER ||
+    TARGET == GL_DISPATCH_INDIRECT_BUFFER ||
+    TARGET == GL_DRAW_INDIRECT_BUFFER ||
+    TARGET == GL_ELEMENT_ARRAY_BUFFER ||
+    TARGET == GL_PIXEL_PACK_BUFFER ||
+    TARGET == GL_PIXEL_UNPACK_BUFFER ||
+    TARGET == GL_QUERY_BUFFER ||
+    TARGET == GL_SHADER_STORAGE_BUFFER ||
+    TARGET == GL_TEXTURE_BUFFER ||
+    TARGET == GL_TRANSFORM_FEEDBACK_BUFFER ||
+    TARGET == GL_UNIFORM_BUFFER,
+    "Invalid TARGET when instantiating agl::buffer<TARGET>! "
+    "(Instead of instantiating agl::buffer<TARGET> "
+    "use an agl typedef-ed shader type such as agl::array_buffer)!"
+);
+
+private:
+    using buffer::bind;
+
+public:
+    void bind() {buffer::bind(TARGET);}
+};
+using array_buffer = single_binding_buffer<GL_ARRAY_BUFFER>;
+using element_array_buffer = single_binding_buffer<GL_ELEMENT_ARRAY_BUFFER>;
+//Unsure of use cases of other buffer types, so explicit typedef-ing might be wrong
+// Example: GL_COPY_READ_BUFFER should not be singly bound
 #ifndef AGL_GL_OBJECT_ACCESS
     #undef glGenBuffers
     #undef glDeleteBuffers
@@ -110,6 +143,58 @@ public:
     bool link_success() const;
     std::string info_log() const;
 
+    GLint uniform_location(const char*);
+
+    struct bound final {
+        bound() = delete;
+
+        static void set_uniform(GLint, float const);
+        static void set_uniform(GLint, glm::fvec2 const&);
+        static void set_uniform(GLint, glm::fvec3 const&);
+        static void set_uniform(GLint, glm::fvec4 const&);
+        static void set_uniform(GLint, int const);
+        static void set_uniform(GLint, glm::ivec2 const&);
+        static void set_uniform(GLint, glm::ivec3 const&);
+        static void set_uniform(GLint, glm::ivec4 const&);
+        static void set_uniform(GLint, unsigned int const);
+        static void set_uniform(GLint, glm::uvec2 const&);
+        static void set_uniform(GLint, glm::uvec3 const&);
+        static void set_uniform(GLint, glm::uvec4 const&);
+
+        static void set_uniform(GLint, GLsizei, float const*);
+        static void set_uniform(GLint, GLsizei, glm::fvec2 const*);
+        static void set_uniform(GLint, GLsizei, glm::fvec3 const*);
+        static void set_uniform(GLint, GLsizei, glm::fvec4 const*);
+        static void set_uniform(GLint, GLsizei, int const*);
+        static void set_uniform(GLint, GLsizei, glm::ivec2 const*);
+        static void set_uniform(GLint, GLsizei, glm::ivec3 const*);
+        static void set_uniform(GLint, GLsizei, glm::ivec4 const*);
+        static void set_uniform(GLint, GLsizei, unsigned int const*);
+        static void set_uniform(GLint, GLsizei, glm::uvec2 const*);
+        static void set_uniform(GLint, GLsizei, glm::uvec3 const*);
+        static void set_uniform(GLint, GLsizei, glm::uvec4 const*);
+
+        static void set_uniform(GLint, glm::mat2x2 const&, bool transpose = false);
+        static void set_uniform(GLint, glm::mat3x3 const&, bool transpose = false);
+        static void set_uniform(GLint, glm::mat4x4 const&, bool transpose = false);
+        static void set_uniform(GLint, glm::mat2x3 const&, bool transpose = false);
+        static void set_uniform(GLint, glm::mat3x2 const&, bool transpose = false);
+        static void set_uniform(GLint, glm::mat2x4 const&, bool transpose = false);
+        static void set_uniform(GLint, glm::mat4x2 const&, bool transpose = false);
+        static void set_uniform(GLint, glm::mat3x4 const&, bool transpose = false);
+        static void set_uniform(GLint, glm::mat4x3 const&, bool transpose = false);
+
+        static void set_uniform(GLint, GLsizei, glm::mat2x2 const*, bool transpose = false);
+        static void set_uniform(GLint, GLsizei, glm::mat3x3 const*, bool transpose = false);
+        static void set_uniform(GLint, GLsizei, glm::mat4x4 const*, bool transpose = false);
+        static void set_uniform(GLint, GLsizei, glm::mat2x3 const*, bool transpose = false);
+        static void set_uniform(GLint, GLsizei, glm::mat3x2 const*, bool transpose = false);
+        static void set_uniform(GLint, GLsizei, glm::mat2x4 const*, bool transpose = false);
+        static void set_uniform(GLint, GLsizei, glm::mat4x2 const*, bool transpose = false);
+        static void set_uniform(GLint, GLsizei, glm::mat3x4 const*, bool transpose = false);
+        static void set_uniform(GLint, GLsizei, glm::mat4x3 const*, bool transpose = false);
+    };
+    
 private:
     GLuint _id;
     static thread_local GLuint _bound_id;
@@ -123,6 +208,7 @@ private:
     #undef glLinkProgram
     #undef glAttachShader
     #undef glGetProgramInfoLog
+    #undef glGetUniformLocation
 #endif
 
 struct vertex_array {
